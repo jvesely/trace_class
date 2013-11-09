@@ -2,7 +2,10 @@
 PROJECT=trace_class
 OBJS = \
 	main.o \
-	instruction.o
+	feature_vector.o \
+	instruction.o \
+	processor.o
+
 CFLAGS= -Wall -Wextra -std=c99 -O2
 LDFAGS=
 
