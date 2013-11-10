@@ -16,4 +16,7 @@ $(PROJECT): $(OBJS)
 clean:
 	rm -vf $(PROJECT) $(OBJS) Makefile.depend
 
--include Maefile.depend
+Makefile.depend:
+	@gcc -MM $(OBJS:.o=.c) > Makefile.depend
+
+-include Makefile.depend

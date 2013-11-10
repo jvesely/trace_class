@@ -1,2 +1,4 @@
+Makefile.depend
 trace_class
 *.o
+tags
