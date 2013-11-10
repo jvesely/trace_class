@@ -5,7 +5,9 @@
 
 #include <stdio.h>
 
-#define COUNT_LIMIT 10000000
+enum {
+	COUNT_LIMIT = 25000000,
+};
 
 
 int main(int argc, char **argv)
@@ -24,6 +26,7 @@ int main(int argc, char **argv)
 			feature_vector_t v;
 			feature_vector_init(&v, &proc);
 			feature_vector_print(&v);
+			processor_clear(&proc);
 		}
 		instruction_clean(&i);
 	}
