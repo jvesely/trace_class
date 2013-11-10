@@ -9,7 +9,7 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 enum {
-	NICE_PRIME = 3000017,
+	NICE_PRIME = 2000003,
 };
 
 static node_t * get_node(address_table_t *table, uintptr_t address)
@@ -27,6 +27,7 @@ static node_t * get_node(address_table_t *table, uintptr_t address)
 	node_t *new_node = calloc(1, sizeof(node_t));
 	if (new_node) {
 		new_node->next = *row;
+		new_node->address = address;
 		*row = new_node;
 		++table->count;
 	}
