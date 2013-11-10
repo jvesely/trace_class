@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdlib.h>  //calloc
 #include <string.h>  //memset
+#include <stdio.h>
 
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -52,14 +53,24 @@ void address_table_clear(address_table_t *table)
 	assert(table);
 	node_t **old = table->table;
 	const size_t old_size = table->table_size;
+	size_t max_row = 0;
+	size_t deleted = 0;
 	for (size_t row = 0; row < old_size; ++row) {
+		size_t current = 0;
 		while (old[row]) {
 			node_t *item = old[row];
 			old[row] = item->next;
 			free(item);
+			++current;
+			++deleted;
 		}
+		if (current > max_row)
+			max_row = current;
 	}
-
+#ifdef DEBUG
+	fprintf(stderr, "Max elements per row: %zu, total elements %zu, total "
+		"accesses %zu\n", max_row, deleted, table->total_accesses);
+#endif
 	memset(table, 0, sizeof(*table));
 	table->table = old;
 	table->table_size = old_size;
