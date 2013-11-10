@@ -1,6 +1,7 @@
 
 PROJECT=trace_class
 OBJS = \
+	address_table.o \
 	main.o \
 	feature_vector.o \
 	instruction.o \
