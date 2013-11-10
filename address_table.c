@@ -60,7 +60,6 @@ void address_table_clear(address_table_t *table)
 	}
 
 	memset(table, 0, sizeof(*table));
-	memset(old, 0, sizeof(node_t*));
 	table->table = old;
 	table->table_size = old_size;
 }
