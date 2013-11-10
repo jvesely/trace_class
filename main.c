@@ -30,6 +30,7 @@ int main(int argc, char **argv)
 	feature_vector_t v;
 	feature_vector_init(&v, &proc);
 	feature_vector_print(&v);
+	processor_fini(&proc);
 
 	printf("Parsed instructions: %zu\n", count);
 
