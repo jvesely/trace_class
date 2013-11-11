@@ -9,10 +9,11 @@ enum {
 	COUNT_LIMIT = 25000000,
 };
 
+typedef int (*vector_callback_t)(const char *, feature_vector_t *, void *);
 
-int main(int argc, char **argv)
+static void process(const char *class, FILE *trace, vector_callback_t cb,
+	void* arg)
 {
-	FILE *trace = stdin;
 	size_t count = 0;
 
 	instruction_t i = {0};
@@ -25,7 +26,7 @@ int main(int argc, char **argv)
 		if (count % COUNT_LIMIT == 0) {
 			feature_vector_t v;
 			feature_vector_init(&v, &proc);
-			feature_vector_print(&v);
+			cb(class, &v, arg);
 			processor_clear(&proc);
 		}
 		instruction_clean(&i);
@@ -36,6 +37,18 @@ int main(int argc, char **argv)
 	processor_fini(&proc);
 
 	printf("Parsed instructions: %zu\n", count);
+}
+
+static int vector_print(const char *class, feature_vector_t *v, void *arg)
+{
+	(void)class;
+	(void)arg;
+	feature_vector_print(v);
+	return 0;
+}
+int main(int argc, char **argv)
+{
+	process("no class", stdin, vector_print, NULL);
 
 	return 0;
 }
