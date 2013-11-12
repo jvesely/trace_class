@@ -4,6 +4,7 @@
 #include "feature_vector.h"
 
 #include <stdio.h>
+#include <getopt.h>
 
 enum {
 	COUNT_LIMIT = 25000000,
@@ -41,14 +42,51 @@ static void process(const char *class, FILE *trace, vector_callback_t cb,
 
 static int vector_print(const char *class, feature_vector_t *v, void *arg)
 {
-	(void)class;
 	(void)arg;
+	static int done = 0;
+	if (!done) {
+		printf("%s\n", class);
+		done =1;
+	}
 	feature_vector_print(v);
 	return 0;
 }
+
+struct option options[] = {
+	{ "class", required_argument, NULL, 'c'},
+	{ "file", required_argument, NULL, 'f'},
+	{ "help", no_argument, NULL, 'h'},
+};
+
+static void help(const char *name)
+{
+	printf("%s usage\n"
+		"\t--class,-c	The provided trace is of this class\n"
+		"\t--file,-f	Use this file a a trace (stdin by default)\n"
+		"\t--help,-h	This help\n", name);
+}
+
 int main(int argc, char **argv)
 {
-	process("no class", stdin, vector_print, NULL);
+	const char * class = NULL;
+	const char * file = NULL;
+	FILE *trace = stdin;
+
+	int c;
+	while ((c = getopt(argc, argv, "f:c:h")) != -1) {
+		switch (c) {
+		case 'c': class = optarg; break;
+		case 'f': file = optarg; break;
+		default:
+			help(argv[0]);
+			return 1;
+		}
+	}
+	if (file)
+		trace = fopen(file, "r");
+	process(class, trace, vector_print, NULL);
+	if (file)
+		fclose(trace);
 
 	return 0;
 }
