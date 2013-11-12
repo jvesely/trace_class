@@ -6,13 +6,20 @@
 #include <stdio.h>
 #include <getopt.h>
 
+#include <zlib.h>
+
 enum {
 	COUNT_LIMIT = 25000000,
 };
 
 typedef int (*vector_callback_t)(const char *, feature_vector_t *, void *);
 
-static void process(const char *class, FILE *trace, vector_callback_t cb,
+static char *gz_read(void *file, char *buffer, size_t size)
+{
+	return gzgets(file, buffer, size);
+}
+
+static void process(const char *class, gzFile trace, vector_callback_t cb,
 	void* arg)
 {
 	size_t count = 0;
@@ -21,7 +28,7 @@ static void process(const char *class, FILE *trace, vector_callback_t cb,
 	processor_t proc;
 	processor_init(&proc);
 
-	while (!instruction_get(&i, trace)) {
+	while (!instruction_get(&i, trace, gz_read)) {
 		++count;
 		processor_add_instruction(&proc, &i);	
 		if (count % COUNT_LIMIT == 0) {
@@ -70,7 +77,7 @@ int main(int argc, char **argv)
 {
 	const char * class = NULL;
 	const char * file = NULL;
-	FILE *trace = stdin;
+	gzFile trace = NULL;
 
 	int c;
 	while ((c = getopt(argc, argv, "f:c:h")) != -1) {
@@ -83,10 +90,16 @@ int main(int argc, char **argv)
 		}
 	}
 	if (file)
-		trace = fopen(file, "r");
+		trace = gzopen(file, "r");
+	else
+		trace = gzdopen(0, "r");
+	if (!trace) {
+		fprintf(stderr, "Failed to open input trace file\n");
+		return 1;
+	}
 	process(class, trace, vector_print, NULL);
-	if (file)
-		fclose(trace);
+
+	gzclose(trace);
 
 	return 0;
 }

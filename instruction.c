@@ -13,13 +13,13 @@
  * at least 8 fields
  */
 
-int instruction_get(instruction_t *insn, FILE* file)
+int instruction_get(instruction_t *insn, void* file, getline_t getline)
 {
 	if (!insn)
 		return -ENOMEM;
 	memset(insn, 0, sizeof(*insn));
 	char tmp_buffer[1024];
-	if (!fgets(tmp_buffer, 1023, file))
+	if (!getline(file, tmp_buffer, sizeof(tmp_buffer)))
 		return -1;
 
 	char *it = tmp_buffer;

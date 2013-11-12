@@ -12,7 +12,7 @@ LDFAGS=
 
 
 $(PROJECT): $(OBJS)
-	gcc $^ -o $@
+	gcc $^ -lz -o $@
 
 clean:
 	rm -vf $(PROJECT) $(OBJS) Makefile.depend

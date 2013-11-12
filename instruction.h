@@ -20,8 +20,9 @@ typedef struct {
 	uintptr_t *dst_mem;
 } instruction_t;
 
+typedef char *(*getline_t)(void *file, char *buffer, size_t size);
 
-int instruction_get(instruction_t *insn, FILE* file);
+int instruction_get(instruction_t *insn, void* file, getline_t getline);
 void instruction_clean(instruction_t *insn);
 
 
