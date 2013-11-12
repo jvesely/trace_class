@@ -41,7 +41,7 @@ static void process(const char *class, gzFile trace, vector_callback_t cb,
 	}
 	feature_vector_t v;
 	feature_vector_init(&v, &proc);
-	feature_vector_print(&v);
+	cb(class, &v, arg);
 	processor_fini(&proc);
 
 	printf("Parsed instructions: %zu\n", count);
@@ -50,12 +50,7 @@ static void process(const char *class, gzFile trace, vector_callback_t cb,
 static int vector_print(const char *class, feature_vector_t *v, void *arg)
 {
 	(void)arg;
-	static int done = 0;
-	if (!done) {
-		printf("%s\n", class);
-		done =1;
-	}
-	feature_vector_print(v);
+	feature_vector_print(v, class);
 	return 0;
 }
 

@@ -33,11 +33,11 @@ int feature_vector_init(feature_vector_t *v, processor_t *p)
 	return 0;
 }
 
-int feature_vector_print(feature_vector_t *v)
+int feature_vector_print(feature_vector_t *v, const char *class)
 {
 	assert(v);
-	return printf("Vector: R/W ratio: %f, M/C ratio: %f, avg repeats: %f, "
-		"avg access distance: %f, avg reuse time: %f\n",
-		v->rw_ratio, v->move_compute_ratio, v->avg_repeat_access,
+	return printf("%s vector: R/W ratio: %f, M/C ratio: %f, avg repeats: "
+		"%f, avg access distance: %f, avg reuse time: %f\n",
+		class, v->rw_ratio, v->move_compute_ratio, v->avg_repeat_access,
 		v->avg_access_distance, v->avg_reuse_time);
 }
