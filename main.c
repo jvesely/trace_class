@@ -59,7 +59,7 @@ static int vector_print(const char *class, feature_vector_t *v, void *arg)
 	return 0;
 }
 
-struct option options[] = {
+static struct option options[] = {
 	{ "class", required_argument, NULL, 'c'},
 	{ "file", required_argument, NULL, 'f'},
 	{ "size", required_argument, NULL, 's'},
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	size_t limit = COUNT_LIMIT;
 
 	int c;
-	while ((c = getopt(argc, argv, "f:c:s:h")) != -1) {
+	while ((c = getopt_long(argc, argv, "f:c:s:h", options, NULL)) != -1) {
 		switch (c) {
 		case 'c': class = optarg; break;
 		case 'f': file = optarg; break;
