@@ -50,6 +50,7 @@ int instruction_get(instruction_t *insn, void* file, getline_t getline)
 	if (!getline(file, tmp_buffer, sizeof(tmp_buffer)))
 		return -1;
 
+	errno = 0;
 	char *it = tmp_buffer;
 	insn->code = strtoll(it, &it, 16);
 	insn->category = strtoll(it + 1, &it, 10);
@@ -61,7 +62,8 @@ int instruction_get(instruction_t *insn, void* file, getline_t getline)
 		{&insn->src_count, &insn->src_mem, 16},
 		{&insn->dst_count, &insn->dst_mem, 16},
 	};
-	for (unsigned i = 0; i < sizeof(places)/sizeof(places[0]); ++i) {
+	for (unsigned i = 0;
+	     errno == 0 && i < sizeof(places) / sizeof(places[0]); ++i) {
 		*places[i].count = strtoll(it + 1, &it, 10);
 		*places[i].place = calloc(*places[i].count, sizeof(uintptr_t));
 		for (size_t j = 0; j < *places[i].count; ++j) {
@@ -69,7 +71,7 @@ int instruction_get(instruction_t *insn, void* file, getline_t getline)
 				strtoll(it + 1, &it, places[i].base);
 		}
 	}
-	return 0;
+	return errno;
 }
 
 /** Set everything to zero */
