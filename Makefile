@@ -2,17 +2,17 @@
 PROJECT=trace_class
 OBJS = \
 	address_table.o \
-	main.o \
 	feature_vector.o \
 	instruction.o \
+	main.o \
 	processor.o
 
 CFLAGS= -Wall -Wextra -std=c99 -O2
-LDFAGS=
+LDFLAGS= -lz
 
 
 $(PROJECT): $(OBJS)
-	gcc $^ -lz -o $@
+	gcc $^ $(LDFLAGS) -o $@
 
 clean:
 	rm -vf $(PROJECT) $(OBJS) Makefile.depend
