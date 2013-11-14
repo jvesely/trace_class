@@ -5,10 +5,11 @@ OBJS = \
 	feature_vector.o \
 	instruction.o \
 	main.o \
-	processor.o
+	processor.o \
+	storage.o
 
 CFLAGS= -Wall -Wextra -std=c99 -O2
-LDFLAGS= -lz
+LDFLAGS= -lz -lsqlite3
 
 
 $(PROJECT): $(OBJS)
