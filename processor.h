@@ -32,6 +32,8 @@
 #include "instruction.h"
 #include "address_table.h"
 
+
+/** Global statistical processing */
 typedef struct {
 	address_table_t atable;
 	size_t reads;

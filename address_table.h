@@ -33,6 +33,8 @@
 #include <inttypes.h>  //uintptr_t
 
 typedef struct node node_t;
+
+/** Statistics per unique address */
 struct node {
 	node_t *next;
 	uintptr_t address;
@@ -45,6 +47,7 @@ struct node {
 	unsigned long long write_reuse_time_sum;
 };
 
+/** Total memory access statistics */
 typedef struct {
 	node_t **table;
 	size_t table_size;

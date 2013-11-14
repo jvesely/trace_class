@@ -50,9 +50,12 @@ static const char * insert_vector_template = " \
 		%Q, %f, %f, %f, %f, %f); \
 	";	
 
+/** Initialize sqlite backend storage */
 int storage_init(storage_t *storage, const char *file, size_t size)
 {
 	assert(storage);
+	if (!file)
+		return -EINVAL;
 
 	int ret = snprintf(storage->table_name, sizeof(storage->table_name),
 		table_name_template, size / 1000000);
@@ -74,6 +77,7 @@ int storage_init(storage_t *storage, const char *file, size_t size)
 	return ret;
 }
 
+/** Close sqlite backend storage */
 void storage_fini(storage_t *storage)
 {
 	if (storage && storage->db) {
@@ -81,6 +85,7 @@ void storage_fini(storage_t *storage)
 	}
 }	
 
+/** Store datapoint in the database. */
 int storage_store_vector(storage_t *storage, const char* class,
 	const feature_vector_t *data)
 {

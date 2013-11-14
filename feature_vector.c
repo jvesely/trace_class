@@ -30,6 +30,8 @@
 #include <stdio.h>
 #include "feature_vector.h"
 
+
+/** Compute sample data */
 int feature_vector_init(feature_vector_t *v, processor_t *p)
 {
 	assert(v);
@@ -60,6 +62,7 @@ int feature_vector_init(feature_vector_t *v, processor_t *p)
 	return 0;
 }
 
+/** Print helper function. */
 int feature_vector_print(feature_vector_t *v, const char *class)
 {
 	assert(v);

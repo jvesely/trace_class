@@ -30,6 +30,7 @@
 
 #include "processor.h"
 
+/** Data point features */
 typedef struct {
 	double rw_ratio;
 	double move_compute_ratio;
@@ -40,6 +41,5 @@ typedef struct {
 
 int feature_vector_init(feature_vector_t *v, processor_t *p);
 int feature_vector_print(feature_vector_t *v, const char *class);
-
 
 #endif

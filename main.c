@@ -37,16 +37,21 @@
 #include <zlib.h>
 
 enum {
+	/** Default number of instructions per data point */
 	COUNT_LIMIT = 25000000,
 };
 
 typedef int (*vector_callback_t)(const char *, feature_vector_t *, void *);
 
+/** Read one line from gzip compressed file */
 static char *gz_read(void *file, char *buffer, size_t size)
 {
 	return gzgets(file, buffer, size);
 }
 
+/** Read instructions from the provided trace and call %cb after %p
+ * limit instructions has been parsed.
+ */
 static void process(const char *class, gzFile trace, vector_callback_t cb,
 	void* arg, size_t limit)
 {
@@ -67,6 +72,7 @@ static void process(const char *class, gzFile trace, vector_callback_t cb,
 		}
 		instruction_clean(&i);
 	}
+
 	feature_vector_t v;
 	feature_vector_init(&v, &proc);
 	cb(class, &v, arg);
@@ -75,6 +81,7 @@ static void process(const char *class, gzFile trace, vector_callback_t cb,
 	printf("Parsed instructions: %zu\n", count);
 }
 
+/** Print the vector or store it in the database. Based on %p arg value. */
 static int vector_print_store(const char *class, feature_vector_t *v, void *arg)
 {
 	if (arg) {
@@ -85,6 +92,7 @@ static int vector_print_store(const char *class, feature_vector_t *v, void *arg)
 	return 0;
 }
 
+/** supported cmdline options */
 static struct option options[] = {
 	{ "class", required_argument, NULL, 'c'},
 	{ "file", required_argument, NULL, 'f'},
@@ -93,6 +101,7 @@ static struct option options[] = {
 	{ "help", no_argument, NULL, 'h'},
 };
 
+/** Help function prints usage help */
 static void help(const char *name)
 {
 	printf("%s usage\n"
@@ -107,14 +116,17 @@ static void help(const char *name)
 
 int main(int argc, char **argv)
 {
+	/* Initialize defaults */
 	const char * class = NULL;
 	const char * file = NULL;
 	const char * dbfile = NULL;
 	gzFile trace = NULL;
 	size_t limit = COUNT_LIMIT;
 
+	/* Parse cmdline arguments */
 	int c;
-	while ((c = getopt_long(argc, argv, "f:c:s:d:h", options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "f:c:s:d:h", options, NULL)) != -1)
+	{
 		switch (c) {
 		case 'c': class = optarg; break;
 		case 'f': file = optarg; break;
@@ -126,19 +138,31 @@ int main(int argc, char **argv)
 		}
 	}
 
-	storage_t store;
-	storage_init(&store, dbfile, limit);
 
-	if (file)
+	/* Initialize sqlite3 storage engine */
+	storage_t store;
+	if (storage_init(&store, dbfile, limit)) {
+		fprintf(stderr, "Failed to initialize DB storage: %s.\n"
+			"Use -h to get usage help.\n", dbfile);
+		return 1;
+	}
+
+	/* Open stdin if no file was provided */
+	if (file) {
 		trace = gzopen(file, "r");
-	else
+	} else {
 		trace = gzdopen(0, "r");
+	}
+
 	if (!trace) {
 		fprintf(stderr, "Failed to open input trace file\n");
 		return 1;
 	}
+
+	/* Start processing */
 	process(class, trace, vector_print_store, &store, limit);
 
+	/* Cleanup */
 	storage_fini(&store);
 	gzclose(trace);
 

@@ -40,6 +40,7 @@
  * at least 8 fields
  */
 
+/** Read one line and parse it to instruction structure. */
 int instruction_get(instruction_t *insn, void* file, getline_t getline)
 {
 	if (!insn)
@@ -64,12 +65,14 @@ int instruction_get(instruction_t *insn, void* file, getline_t getline)
 		*places[i].count = strtoll(it + 1, &it, 10);
 		*places[i].place = calloc(*places[i].count, sizeof(uintptr_t));
 		for (size_t j = 0; j < *places[i].count; ++j) {
-			(*places[i].place)[j] = strtoll(it + 1, &it, places[i].base);
+			(*places[i].place)[j] =
+				strtoll(it + 1, &it, places[i].base);
 		}
 	}
 	return 0;
 }
 
+/** Set everything to zero */
 void instruction_clean(instruction_t *insn)
 {
 	assert(insn);

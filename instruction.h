@@ -33,7 +33,7 @@
 #include <stdio.h>  //FILE*
 #include <errno.h>
 
-
+/** Instruction representation structure */
 typedef struct {
 	unsigned code;
 	unsigned category;

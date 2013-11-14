@@ -30,7 +30,7 @@
 #include <errno.h>
 #include "processor.h"
 
-
+/** Set everything to zero and allocate memory. */
 int processor_init(processor_t *processor)
 {
 	if (!processor)
@@ -39,6 +39,7 @@ int processor_init(processor_t *processor)
 	return address_table_init(&processor->atable);
 }
 
+/* Set everything to zero. */
 void processor_clear(processor_t *processor)
 {
 	assert(processor);
@@ -48,12 +49,14 @@ void processor_clear(processor_t *processor)
 	processor->atable = backup;
 }
 
+/** Free allocated memory */
 void processor_fini(processor_t *processor)
 {
 	assert(processor);
 	address_table_fini(&processor->atable);
 }
 
+/** Process statistical information for one instruction. */
 int processor_add_instruction(processor_t *processor, const instruction_t *insn)
 {
 	assert(processor);

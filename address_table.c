@@ -37,9 +37,11 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 enum {
+	/* Random prime number, should be enough for reasonable performance */
 	NICE_PRIME = 2000003,
 };
 
+/** Find existing, or create new node for the address */
 static node_t * get_node(address_table_t *table, uintptr_t address)
 {
 	assert(table);
@@ -75,6 +77,7 @@ int address_table_init(address_table_t *table)
 	return 0;
 }
 
+/** Empty the table */
 void address_table_clear(address_table_t *table)
 {
 	assert(table);
@@ -103,6 +106,7 @@ void address_table_clear(address_table_t *table)
 	table->table_size = old_size;
 }
 
+/** Empty the table, free memory */
 void address_table_fini(address_table_t *table)
 {
 	if (table) {
@@ -112,27 +116,31 @@ void address_table_fini(address_table_t *table)
 	}
 }
 
-
+/** Process statistics for memory access. */
 static int record_access(address_table_t *table, uintptr_t address, int write)
 {
 	assert(table);
+	/* Update distance from the last access */
 	if (table->last_access)
 		table->distance_sum += abs(address - table->last_access);
-	++table->total_accesses;
 	table->last_access = address;
+	++table->total_accesses;
+
 	node_t *node = get_node(table, address);
 
-	/* update node*/
+	/* update node */
 	const size_t last_use = MAX(node->last_read, node->last_write);
 	if (last_use)
 		node->total_reuse_time_sum += (table->total_accesses - last_use);
 	if (write) {
+		/* process write */
 		++node->writes;
 		if (node->last_write)
 			node->write_reuse_time_sum +=
 				(table->total_accesses - node->last_write);
 		node->last_write = table->total_accesses;
 	} else {
+		/* process read */
 		++node->reads;
 		if (node->last_read)
 			node->read_reuse_time_sum +=
@@ -143,12 +151,13 @@ static int record_access(address_table_t *table, uintptr_t address, int write)
 	return 0;
 }
 
-
+/** Read access helper */
 int address_table_record_read(address_table_t *table, uintptr_t address)
 {
 	return record_access(table, address, 0);
 }
 
+/** Write access helper */
 int address_table_record_write(address_table_t *table, uintptr_t address)
 {
 	return record_access(table, address, 1);

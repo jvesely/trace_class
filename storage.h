@@ -33,6 +33,7 @@
 #include <sqlite3.h>
 #include "feature_vector.h"
 
+/** sqlite3 database backend structure */
 typedef struct {
 	sqlite3 *db;
 	char table_name[10];
