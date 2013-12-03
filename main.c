@@ -84,6 +84,17 @@ static void process(const char *class, gzFile trace, vector_callback_t cb,
 /** Print the vector or store it in the database. Based on %p arg value. */
 static int vector_print_store(const char *class, feature_vector_t *v, void *arg)
 {
+	/* If the class is unknown we have to ask the storage backend */
+	if (!class) {
+		const int ret = storage_classify_vector(arg, v, &class);
+		if (ret < 0) {
+			printf("Classification error: %i\n", ret);
+		} else {
+			printf("Classified as \"%s\"\n", class);
+		}
+		return 0;
+	}
+
 	if (arg) {
 		storage_store_vector(arg, class, v);
 	} else {

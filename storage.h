@@ -41,7 +41,9 @@ typedef struct {
 
 int storage_init(storage_t *storage, const char *file, size_t size);
 void storage_fini(storage_t *storage);
-int storage_store_vector(storage_t *storage, const char* class,
+int storage_store_vector(storage_t *storage, const char *class,
 	const feature_vector_t *data);
+int storage_classify_vector(storage_t *storage, const feature_vector_t *data,
+	const char **class);
 
 #endif

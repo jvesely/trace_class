@@ -90,13 +90,27 @@ int storage_store_vector(storage_t *storage, const char* class,
 	const feature_vector_t *data)
 {
 	assert(storage);
+	if (!data)
+		return -EINVAL;
+
 	char * statement = sqlite3_mprintf(insert_vector_template,
 		storage->table_name, class, data->rw_ratio,
 		data->move_compute_ratio, data->avg_repeat_access,
 		data->avg_access_distance, data->avg_reuse_time);
 	if (!statement)
 		return -ENOMEM;
+
 	const int ret = sqlite3_exec(storage->db, statement, NULL, NULL, NULL);
 	sqlite3_free(statement);
 	return ret;
+}
+
+int storage_classify_vector(storage_t *storage, const feature_vector_t *data,
+	const char **class)
+{
+	assert(storage);
+	if (!data || !class)
+		return -EINVAL;
+	*class = "unknown";
+	return 0;
 }
