@@ -41,5 +41,7 @@ typedef struct {
 
 int feature_vector_init(feature_vector_t *v, processor_t *p);
 int feature_vector_print(const feature_vector_t *v, const char *class);
+double feature_vector_euclidean_distance(const feature_vector_t *a,
+	const feature_vector_t *b);
 
 #endif

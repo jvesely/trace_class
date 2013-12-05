@@ -35,7 +35,7 @@ OBJS = \
 	storage.o
 
 CFLAGS= -Wall -Wextra -std=c99 -O2
-LDFLAGS= -lz -lsqlite3
+LDFLAGS= -lz -lsqlite3 -lm
 
 
 $(PROJECT): $(OBJS)
