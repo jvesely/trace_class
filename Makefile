@@ -28,6 +28,7 @@
 PROJECT=trace_class
 OBJS = \
 	address_table.o \
+	data_point_heap.o \
 	feature_vector.o \
 	instruction.o \
 	main.o \
