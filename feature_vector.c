@@ -63,7 +63,7 @@ int feature_vector_init(feature_vector_t *v, processor_t *p)
 }
 
 /** Print helper function. */
-int feature_vector_print(feature_vector_t *v, const char *class)
+int feature_vector_print(const feature_vector_t *v, const char *class)
 {
 	assert(v);
 	return printf("%s vector: R/W ratio: %f, M/C ratio: %f, avg repeats: "

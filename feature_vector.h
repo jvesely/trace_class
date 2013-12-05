@@ -40,6 +40,6 @@ typedef struct {
 } feature_vector_t;
 
 int feature_vector_init(feature_vector_t *v, processor_t *p);
-int feature_vector_print(feature_vector_t *v, const char *class);
+int feature_vector_print(const feature_vector_t *v, const char *class);
 
 #endif
