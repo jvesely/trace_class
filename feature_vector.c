@@ -82,7 +82,7 @@ double feature_vector_euclidean_distance(const feature_vector_t *a,
 
 	const double diffs[] = {
 		a->rw_ratio - b->rw_ratio,
-		a->move_compute_ratio - b->move_compute_ratio,
+		(a->move_compute_ratio - b->move_compute_ratio) * 2,
 		a->avg_repeat_access - b->avg_repeat_access,
 		(a->avg_reuse_time - b->avg_reuse_time) / 100000.0,
 //		a->avg_access_distance - b->avg_access_distance,
