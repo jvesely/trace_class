@@ -32,6 +32,7 @@
 #include "storage.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <getopt.h>
 
 #include <zlib.h>
@@ -91,6 +92,7 @@ static int vector_print_store(const char *class, feature_vector_t *v, void *arg)
 			printf("Classification error: %i\n", ret);
 		} else {
 			printf("Classified as \"%s\"\n", class);
+			free((void*)class);
 		}
 		return 0;
 	}
