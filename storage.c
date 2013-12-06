@@ -139,8 +139,8 @@ int storage_classify_vector(storage_t *storage, const feature_vector_t *data,
 		return -EIO;
 	}
 
-	printf("Classifying vector:\n");
-	feature_vector_print(data, "");
+//	printf("Classifying vector:\n");
+//	feature_vector_print(data, "");
 	while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 		const feature_vector_t v = {
 			sqlite3_column_double(stmt, 1),

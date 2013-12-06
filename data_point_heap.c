@@ -31,6 +31,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#define __USE_BSD
 #include <string.h>
 
 #include "data_point_heap.h"
@@ -97,14 +98,15 @@ static void dump(data_point_heap_t *h)
 {
 	assert(h);
 	for (unsigned i = 0; i < h->size; ++i)
-		printf("nearest: <%s, %f>\n", h->heap[i].class, h->heap[i].distance);
+		printf("nearest: <%s, %f>\n", h->heap[i].class,
+			h->heap[i].distance);
 }
 
 int data_point_heap_insert(data_point_heap_t *h,
 	double distance, const char *name)
 {
 	assert(h);
-	
+
 	/* The new distance is greater than the biggest in our heap */
 	if (h->heap[0].distance != -1 && h->heap[0].distance < distance)
 		return 0;
@@ -142,8 +144,23 @@ int data_point_heap_get_elect(data_point_heap_t *h, const char **class)
 {
 	assert(h);
 	assert(class);
-	dump(h);
 
-	*class = "unknown";
+	const char * best = NULL;
+	unsigned votes = 0;
+
+	for (unsigned i = 1; i < h->size; ++i) {
+		unsigned ballot = 0;
+		for (unsigned j = 1; j < h->size; ++j)
+			if (strcmp(h->heap[i].class, h->heap[j].class) == 0)
+				++ballot;
+		if (ballot >= votes) {
+			best = h->heap[i].class;
+			votes = ballot;
+		}
+	}
+
+	printf("Ballot won by '%s' with %u votes.\n", best, votes);
+
+	*class = strdup(best);
 	return 0;
 }
