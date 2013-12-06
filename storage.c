@@ -111,10 +111,8 @@ int storage_store_vector(storage_t *storage, const char* class,
 }
 
 int storage_classify_vector(storage_t *storage, const feature_vector_t *data,
-	const char **class)
+	const char **class, unsigned k)
 {
-	const int k = 7;
-
 	assert(storage);
 	if (!data || !class)
 		return -EINVAL;
@@ -131,7 +129,7 @@ int storage_classify_vector(storage_t *storage, const feature_vector_t *data,
 		return -ENOMEM;
 	}
 
-	sqlite3_stmt *stmt;
+	sqlite3_stmt *stmt = NULL;
 	ret = sqlite3_prepare_v2(storage->db, select, -1, &stmt, NULL);
 	sqlite3_free(select);
 	if (ret != SQLITE_OK) {

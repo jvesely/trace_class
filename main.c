@@ -87,7 +87,7 @@ static int vector_print_store(const char *class, feature_vector_t *v, void *arg)
 {
 	/* If the class is unknown we have to ask the storage backend */
 	if (!class) {
-		const int ret = storage_classify_vector(arg, v, &class);
+		const int ret = storage_classify_vector(arg, v, &class, 7);
 		if (ret < 0) {
 			printf("Classification error: %i\n", ret);
 		} else {
