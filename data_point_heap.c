@@ -62,11 +62,9 @@ static void data_point_swap(data_point_t *a, data_point_t *b)
 static int data_point_set(data_point_t *p, double d, const char *class)
 {
 	assert(p);
-	const size_t len = strlen(class) + 1;
-	char *cpy = malloc(len);
+	char *cpy = strdup(class);
 	if(!cpy)
 		return -ENOMEM;
-	strncpy(cpy, class, len);
 
 	free((char*)p->class);
 	p->distance = d;
