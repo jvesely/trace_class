@@ -100,7 +100,7 @@ int storage_store_vector(storage_t *storage, const char* class,
 	char * statement = sqlite3_mprintf(insert_vector_template,
 		storage->table_name, class, data->rw_ratio,
 		data->move_compute_ratio, data->avg_repeat_access,
-		data->avg_access_distance, data->avg_reuse_time);
+		data->avg_reuse_time, data->avg_access_distance);
 	if (!statement) {
 		return -ENOMEM;
 	}
@@ -144,8 +144,8 @@ int storage_classify_vector(storage_t *storage, const feature_vector_t *data,
 			sqlite3_column_double(stmt, 1),
 			sqlite3_column_double(stmt, 2),
 			sqlite3_column_double(stmt, 3),
-			sqlite3_column_double(stmt, 5),
 			sqlite3_column_double(stmt, 4),
+			sqlite3_column_double(stmt, 5),
 		};
 		const double distance = feature_vector_euclidean_distance(
 			&v, data);
