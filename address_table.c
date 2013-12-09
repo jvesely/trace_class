@@ -61,7 +61,7 @@ static node_t * get_node(address_table_t *table, uintptr_t address)
 		*row = new_node;
 		++table->count;
 	}
-	return new_node;		
+	return new_node;
 }
 
 /** Set everything to zero, allocate memory */

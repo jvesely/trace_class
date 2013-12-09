@@ -87,7 +87,7 @@ void storage_fini(storage_t *storage)
 	if (storage && storage->db) {
 		sqlite3_close(storage->db);
 	}
-}	
+}
 
 /** Store datapoint in the database. */
 int storage_store_vector(storage_t *storage, const char* class,

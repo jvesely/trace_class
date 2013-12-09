@@ -59,7 +59,7 @@ int feature_vector_init(feature_vector_t *v, processor_t *p)
 	}
 
 	v->avg_reuse_time = reuse_time_avg_sum / (double)p->atable.count;
-	
+
 	return 0;
 }
 

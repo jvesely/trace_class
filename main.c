@@ -64,7 +64,7 @@ static void process(const char *class, gzFile trace, vector_callback_t cb,
 
 	while (!instruction_get(&i, trace, gz_read)) {
 		++count;
-		processor_add_instruction(&proc, &i);	
+		processor_add_instruction(&proc, &i);
 		if (limit && (count % limit == 0)) {
 			feature_vector_t v;
 			feature_vector_init(&v, &proc);
