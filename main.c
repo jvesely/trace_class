@@ -40,6 +40,8 @@
 enum {
 	/** Default number of instructions per data point */
 	COUNT_LIMIT = 25000000,
+	/** Default nearest neighbor */
+	DEFAULT_K = 5,
 };
 
 typedef int (*vector_callback_t)(const char *, feature_vector_t *, void *);
@@ -49,6 +51,11 @@ static char *gz_read(void *file, char *buffer, size_t size)
 {
 	return gzgets(file, buffer, size);
 }
+
+typedef struct {
+	storage_t store;
+	unsigned k;
+} context_t;
 
 /** Read instructions from the provided trace and call %cb after %p
  * limit instructions has been parsed.
@@ -85,9 +92,11 @@ static void process(const char *class, gzFile trace, vector_callback_t cb,
 /** Print the vector or store it in the database. Based on %p arg value. */
 static int vector_print_store(const char *class, feature_vector_t *v, void *arg)
 {
+	context_t *ctx = arg;
 	/* If the class is unknown we have to ask the storage backend */
 	if (!class) {
-		const int ret = storage_classify_vector(arg, v, &class, 5);
+		const int ret = storage_classify_vector(&ctx->store,
+			v, &class, ctx->k);
 		if (ret < 0) {
 			printf("Classification error: %i\n", ret);
 		} else {
@@ -98,7 +107,7 @@ static int vector_print_store(const char *class, feature_vector_t *v, void *arg)
 	}
 
 	if (arg) {
-		storage_store_vector(arg, class, v);
+		storage_store_vector(&ctx->store, class, v);
 	} else {
 		feature_vector_print(v, class);
 	}
@@ -111,6 +120,7 @@ static struct option options[] = {
 	{ "file", required_argument, NULL, 'f'},
 	{ "size", required_argument, NULL, 's'},
 	{ "database", required_argument, NULL, 'd'},
+	{ "k-nearest", required_argument, NULL, 'k'},
 	{ "help", no_argument, NULL, 'h'},
 };
 
@@ -118,13 +128,14 @@ static struct option options[] = {
 static void help(const char *name)
 {
 	printf("%s usage\n"
-		"\t--class,-c <arg>   \tThe provided trace is of this class\n"
-		"\t--file,-f <arg>    \tUse this file as a trace (stdin by default)\n"
-		"\t--size,-s <arg>    \tUse <arg> instructions for one data point\n"
-		"\t                   \t0 means no limit. Default is %zu.\n"
-		"\t--database,-d <arg>\tUse this file as a knowledge store backend\n"
+		"\t--class,-c <arg>    \tThe provided trace is of this class\n"
+		"\t--file,-f <arg>     \tUse this file as a trace (stdin by default)\n"
+		"\t--size,-s <arg>     \tUse <arg> instructions for one data point\n"
+		"\t                    \t0 means no limit. Default is %zu.\n"
+		"\t--database,-d <arg> \tUse this file as a knowledge store backend\n"
+		"\t--k-nearest,-k <arg>\tUse <arg> nearest neighbours. Default is %u\n"
 		"\t--help,-h          \tThis help\n",
-		name, (size_t)COUNT_LIMIT);
+		name, (size_t)COUNT_LIMIT, DEFAULT_K);
 }
 
 int main(int argc, char **argv)
@@ -135,16 +146,18 @@ int main(int argc, char **argv)
 	const char * dbfile = NULL;
 	gzFile trace = NULL;
 	size_t limit = COUNT_LIMIT;
+	unsigned k = DEFAULT_K;
 
 	/* Parse cmdline arguments */
 	int c;
-	while ((c = getopt_long(argc, argv, "f:c:s:d:h", options, NULL)) != -1)
+	while ((c = getopt_long(argc, argv, "f:c:s:d:k:h", options, NULL)) != -1)
 	{
 		switch (c) {
 		case 'c': class = optarg; break;
 		case 'f': file = optarg; break;
 		case 'd': dbfile = optarg; break;
 		case 's': sscanf(optarg, "%zu", &limit); break;
+		case 'k': sscanf(optarg, "%u", &k); break;
 		default:
 			help(argv[0]);
 			return 1;
@@ -153,8 +166,8 @@ int main(int argc, char **argv)
 
 
 	/* Initialize sqlite3 storage engine */
-	storage_t store;
-	if (storage_init(&store, dbfile, limit)) {
+	context_t ctx = {.k = k};
+	if (storage_init(&ctx.store, dbfile, limit)) {
 		fprintf(stderr, "Failed to initialize DB storage: %s.\n"
 			"Use -h to get usage help.\n", dbfile);
 		return 1;
@@ -173,10 +186,10 @@ int main(int argc, char **argv)
 	}
 
 	/* Start processing */
-	process(class, trace, vector_print_store, &store, limit);
+	process(class, trace, vector_print_store, &ctx, limit);
 
 	/* Cleanup */
-	storage_fini(&store);
+	storage_fini(&ctx.store);
 	gzclose(trace);
 
 	return 0;
